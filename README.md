@@ -1,5 +1,5 @@
 # Summer-school-of-THU
-Robotics Multimodal Deep Learning  for classification
+Robotics Multimodal Deep Learning  for recognition
 
 You need to run : ### pip install tensorlayer ### at first
 
