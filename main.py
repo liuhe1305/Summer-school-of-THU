@@ -26,7 +26,6 @@ def fit(sess, network, train_op, cost, X_train, X_train2, y_train, x, x_2, y_, a
         n_epoch=100, print_freq=5, X_val=None, X_val2=None, y_val=None, eval_train=True,
         tensorboard=False, tensorboard_epoch_freq=5, tensorboard_weight_histograms=True, tensorboard_graph_vis=True):
     assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
-
     print("Start training the network ...")
     start_time_begin = time.time()
     tensorboard_train_index, tensorboard_val_index = 0, 0
@@ -35,18 +34,10 @@ def fit(sess, network, train_op, cost, X_train, X_train2, y_train, x, x_2, y_, a
         loss_ep = 0; n_step = 0
         for X_train_a, X_train_b, y_train_a in minibatches(X_train, X_train2, y_train,
                                                     batch_size, shuffle=True):
-
             feed_dict = {x: X_train_a, x_2:X_train_b, y_: y_train_a}
             feed_dict.update( network.all_drop )    # enable noise layers
-
-
-
-            #you should fill your code
-            loss, _ = ......
-            # just one line
-
-
-
+            loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
+            #loss, _, y_prediction = sess.run([cost, train_op, y_], feed_dict=feed_dict)
             loss_ep += loss
             n_step += 1
         loss_ep = loss_ep/ n_step
@@ -61,20 +52,11 @@ def fit(sess, network, train_op, cost, X_train, X_train2, y_train, x, x_2, y_, a
                         feed_dict = {x: X_train_a, x_2:X_train_b, y_: y_train_a}
                         feed_dict.update(dp_dict)
                         if acc is not None:
-
-
-
-                            #you should fill your code
-                            err, ac = ......
-                            # just one line
-
-
-
+                            err, ac = sess.run([cost, acc], feed_dict=feed_dict)
                             train_acc += ac
                         else:
                             err = sess.run(cost, feed_dict=feed_dict)
-                        train_loss += err
-                        n_batch += 1
+                        train_loss += err;  n_batch += 1
                     print("   train loss: %f" % (train_loss/ n_batch))
                     if acc is not None:
                         print("   train acc: %f" % (train_acc/ n_batch))
@@ -85,28 +67,13 @@ def fit(sess, network, train_op, cost, X_train, X_train2, y_train, x, x_2, y_, a
                     feed_dict = {x: X_val_a, x_2:X_val_b, y_: y_val_a}
                     feed_dict.update(dp_dict)
                     if acc is not None:
-
-
-
-                        #you should fill your code
-                        err, ac = ......
-                        # just one line
-
-
-
+                        err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+                        # y_predi = y_predi.append(y_pred)
                         val_acc += ac
                     else:
-
-
-
-                        #you should fill your code
-                        err = ......
-                        # just one line
-
-
-
-                    val_loss += err
-                    n_batch += 1
+                        err = sess.run([cost], feed_dict=feed_dict)
+                        # y_predi = y_predi.append(y_pred)
+                    val_loss += err; n_batch += 1
                 print("   val loss: %f" % (val_loss/ n_batch))
                 if acc is not None:
                     print("   val acc: %f" % (val_acc/ n_batch))
@@ -125,8 +92,8 @@ if __name__ == "__main__":
 
 
     # define placeholder 
-    x = tf.placeholder(tf.float32, shape=[......], name='x')
-    x_depth = tf.placeholder(tf.float32, shape=[......], name='x_depth')
+    x = tf.placeholder(tf.float32, shape=[None, ......], name='x')
+    x_depth = tf.placeholder(tf.float32, shape=[None,......], name='x_depth')
     y_ = tf.placeholder(tf.int64, shape=[......], name='y_')
 
     # define model(fill your code)
